@@ -61,7 +61,7 @@ SHAP was replaced with permutation importance, which is compatible with `VotingC
 
 ## Dataset
 
-[ADHD-200 phenotypic dataset](http://fcon_1000.projects.nitrc.org/indi/adhd200/) — 973
+[ADHD-200 phenotypic dataset](http://fcon_1000.projects.nitrc.org/indi/adhd200/) - 973
 participants, multi-site research data. After dropping 26 pending diagnoses: **947 rows**,
 38.2% ADHD / 61.8% control.
 

@@ -153,8 +153,8 @@ export default function AuditDashboard() {
       </div>
 
       <footer className={styles.footer}>
-        Contact Me:<br></br>
-        Built by Adit Sawhney · <a href="https://github.com/aditsawhney" target="_blank">GitHub</a>
+        Connect with me:<br></br>
+        Built by Adit Sawhney · <a href="https://github.com/aditsawhney" target="_blank">GitHub</a> · <a href="https://www.linkedin.com/in/adit-sawhney-ab9175297/" target="_blank">LinkedIn</a>
       </footer>
     </main>
   )
