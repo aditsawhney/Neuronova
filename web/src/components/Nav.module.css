@@ -60,3 +60,14 @@
     color: #fff;
     background: var(--navy-mid);
   }
+
+  @media (max-width: 600px) {
+    .inner {
+      padding: 0 0.75rem;
+    }
+  
+    .link {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.4rem;
+    }
+  }

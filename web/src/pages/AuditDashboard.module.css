@@ -125,3 +125,18 @@
     color: var(--slate);
     text-decoration: underline;
   }
+
+  @media (max-width: 600px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 0.2rem 0;
+    }
+  
+    .rowLabel {
+      min-width: unset;
+    }
+  
+    .rowValue {
+      padding-bottom: 0.5rem;
+    }
+  }
