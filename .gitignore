@@ -17,3 +17,5 @@ data/raw
 
 #Node
 web/node_modules/
+
+web/.env

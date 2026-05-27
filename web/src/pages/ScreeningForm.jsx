@@ -4,7 +4,7 @@ import ScoreQuestion from '../components/ScoreQuestion'
 import RiskResult from '../components/RiskResult'
 import styles from './ScreeningForm.module.css'
 
-const API = 'http://localhost:8000'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const INATTENTIVE_QUESTIONS = [
   'Has difficulty keeping attention on tasks or activities',

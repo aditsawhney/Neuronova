@@ -54,7 +54,11 @@ app = FastAPI(
 # Tighten this to the deployed frontend URL in production.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://neuronova-production.up.railway.app",
+    ],
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )
