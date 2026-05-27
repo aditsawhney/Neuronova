@@ -8,6 +8,9 @@ The core motivation is equity: girls and younger children are chronically underd
 with ADHD. By surfacing risk earlier, referrals can happen faster and more fairly.
 
 ---
+## Project Live Link
+
+> **Live demo:** [neuronova-alpha.vercel.app](https://neuronova-alpha.vercel.app)
 
 ## Results
 
@@ -169,8 +172,9 @@ Both must be running simultaneously for the screening form to work.
 
 ## Author
 
-Built by [Adit Sawhney]
+Built by Adit Sawhney
 
+---
 
 ## Disclaimer
 
