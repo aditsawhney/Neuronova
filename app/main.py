@@ -58,6 +58,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000",
         "https://neuronova-production.up.railway.app",
+        "https://neuronova-alpha.vercel.app"
     ],
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
