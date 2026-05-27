@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=DM+Serif+Display&display=swap');
+
+:root {
+  --navy: #0f1f38;
+  --navy-mid: #1a3254;
+  --navy-light: #2a4a6b;
+  --off-white: #f5f3ef;
+  --warm-white: #faf9f7;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --green: #166534;
+  --green-light: #dcfce7;
+  --red: #991b1b;
+  --red-light: #fee2e2;
+  --slate: #64748b;
+  --border: #e2ddd6;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-serif: 'DM Serif Display', serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--off-white);
+  color: var(--navy);
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.7;
+  color: var(--slate);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-sans);
+}

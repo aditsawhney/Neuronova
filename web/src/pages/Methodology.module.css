@@ -1,0 +1,83 @@
+.page {
+    min-height: calc(100vh - 56px);
+    padding: 3rem 1.5rem;
+  }
+  
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .intro { display: flex; flex-direction: column; gap: 0.5rem; }
+  .title { font-size: 2.25rem; color: var(--navy); }
+  .subtitle { font-size: 0.9375rem; max-width: 520px; }
+  
+  .section {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+  }
+  
+  .sectionTitle {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 1rem;
+  }
+  
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  
+  .body p {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #334155;
+  }
+  
+  .list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding-left: 0;
+  }
+  
+  .list li {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #334155;
+    padding-left: 1.25rem;
+    position: relative;
+  }
+  
+  .list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--slate);
+  }
+  
+  .list li strong {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--slate);
+  }
+  
+  .footer a {
+    color: var(--slate);
+    text-decoration: underline;
+  }
