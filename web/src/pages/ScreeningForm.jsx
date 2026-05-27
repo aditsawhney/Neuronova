@@ -52,7 +52,7 @@ export default function ScreeningForm() {
 
   const handleSubmit = async () => {
     if (!allAnswered) return
-    if (age < 4 || age > 18) {
+    if (parseInt(age) < 4 || parseInt(age) > 18) {
       setError('Age must be between 4 and 18.')
       return
     }
@@ -68,7 +68,12 @@ export default function ScreeningForm() {
       })
       setResult(data)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Could not reach the screening server. Is the backend running?')
+      const detail = err.response?.data?.detail
+      if (Array.isArray(detail)) {
+        setError('Please check your inputs — age must be between 4 and 18.')
+      } else {
+        setError(detail || 'Could not reach the screening server. Is the backend running?')
+      }
     } finally {
       setLoading(false)
     }
