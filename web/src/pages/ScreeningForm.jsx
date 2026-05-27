@@ -52,6 +52,10 @@ export default function ScreeningForm() {
 
   const handleSubmit = async () => {
     if (!allAnswered) return
+    if (age < 4 || age > 18) {
+      setError('Age must be between 4 and 18.')
+      return
+    }
     setLoading(true)
     setError(null)
     try {
