@@ -1,9 +1,9 @@
 """
-train.py — Phase 2 model training
+train.py - Phase 2 model training
 
-Builds a full sklearn Pipeline for each model (preprocessor + classifier),
-runs GridSearchCV using a fixed validation fold (PredefinedSplit), selects
-the best model by F1, calibrates it, and saves to models/.
+Builds a sklearn Pipeline (preprocessor + classifier) for each model, runs
+GridSearchCV on a fixed validation fold (PredefinedSplit), selects the top-N
+by F1, calibrates them, and saves a soft VotingEnsemble to models/.
 
 Run from the project root:
     uv run python src/neuronova/train.py
@@ -28,21 +28,16 @@ from sklearn.svm import SVC
 
 from neuronova.features import build_preprocessor
 
-# ── paths ──────────────────────────────────────────────────────────────────
 PROCESSED = Path("data/processed")
 MODELS_DIR = Path("models")
-
 RANDOM_STATE = 42
 
 
-# ── model definitions ──────────────────────────────────────────────────────
-
 def get_model_configs() -> list[dict]:
     """
-    Each entry defines a model and its hyperparameter grid.
-    Param keys use the pipeline step prefix: 'clf__<param>'.
-    All models that support class_weight get 'balanced' to handle
-    the 38/62 class imbalance without SMOTE overhead at this stage.
+    Model definitions with hyperparameter grids.
+    Param keys use the 'clf__' pipeline prefix.
+    class_weight='balanced' handles the ~38/62 class imbalance.
     """
     return [
         {
@@ -115,8 +110,6 @@ def get_model_configs() -> list[dict]:
     ]
 
 
-# ── data loading ───────────────────────────────────────────────────────────
-
 def load_splits() -> tuple[pd.DataFrame, pd.DataFrame]:
     train = pd.read_csv(PROCESSED / "train.csv")
     val = pd.read_csv(PROCESSED / "val.csv")
@@ -127,32 +120,20 @@ def prepare_search_data(
     train: pd.DataFrame, val: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.Series, np.ndarray]:
     """
-    Combines train and val into a single dataset for GridSearchCV.
-    PredefinedSplit ensures the val rows are always the held-out fold —
-    grid search never trains on val data, it only evaluates on it.
-
-    Returns X_combined, y_combined, and the split indices array.
+    Concatenates train and val for GridSearchCV with PredefinedSplit.
+    Split indices: -1 = train fold, 0 = val fold (val rows never used for fitting).
     """
     combined = pd.concat([train, val], ignore_index=True)
     X = combined.drop(columns=["target"])
     y = combined["target"]
-
-    # -1 = training fold, 0 = validation fold
     split_indices = np.array([-1] * len(train) + [0] * len(val))
-
     return X, y, split_indices
 
-
-# ── training ───────────────────────────────────────────────────────────────
 
 def train_all_models(
     X: pd.DataFrame, y: pd.Series, split_indices: np.ndarray
 ) -> list[dict]:
-    """
-    Trains every model config via GridSearchCV with a fixed val fold.
-    All models scored on F1 (macro) — consistent across the board.
-    Returns results sorted by val F1 descending.
-    """
+    """Runs GridSearchCV for each config. Returns results sorted by val F1."""
     cv = PredefinedSplit(test_fold=split_indices)
     results = []
 
@@ -165,14 +146,13 @@ def train_all_models(
             ("clf", config["clf"]),
         ])
 
-        # LDA with svd solver doesn't support shrinkage — skip invalid combos
         search = GridSearchCV(
             pipeline,
             param_grid=config["params"],
             cv=cv,
             scoring="f1",
             n_jobs=-1,
-            error_score=0.0,  # invalid param combos score 0 rather than crashing
+            error_score=0.0,  # invalid combos (e.g. LDA svd+shrinkage) score 0 instead of crashing
         )
         search.fit(X, y)
 
@@ -199,12 +179,10 @@ def build_and_save_ensemble(
     top_n: int = 3,
 ) -> tuple[VotingClassifier, float]:
     """
-    Calibrate each top pipeline individually, then combine into a soft
-    voting ensemble.
+    Calibrates each top pipeline individually, then combines into a soft voting ensemble.
 
-    Calibrating pipelines individually (rather than wrapping VotingClassifier
-    in CalibratedClassifierCV) keeps the preprocessor attached to each
-    sub-estimator, so string inputs like Handedness reach the encoder intact.
+    Calibrating pipelines individually (rather than wrapping VotingClassifier) keeps
+    the preprocessor attached per sub-estimator, so categorical features survive intact.
     """
     from sklearn.metrics import f1_score
 
@@ -236,8 +214,6 @@ def build_and_save_ensemble(
 
     return ensemble, ensemble_f1
 
-
-# ── main ───────────────────────────────────────────────────────────────────
 
 def main():
     print("Loading splits...")

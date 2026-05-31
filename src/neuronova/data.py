@@ -1,9 +1,8 @@
 """
-data.py — Phase 1 data foundation
+data.py - Phase 1 data preparation
 
-Loads the raw ADHD-200 phenotypic CSV, applies the feature audit,
-binarises the target, and produces a single locked stratified split.
-Processed sets are saved to data/processed/ as CSVs.
+Loads the raw ADHD-200 phenotypic CSV, cleans features, binarises the target,
+and saves a stratified 60/20/20 train/val/test split to data/processed/.
 
 Run from the project root:
     uv run python src/neuronova/data.py
@@ -15,7 +14,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-# ── paths ──────────────────────────────────────────────────────────────────
 RAW = Path("data/raw/adhd200_preprocessed_phenotypics.csv")
 PROCESSED = Path("data/processed")
 
@@ -31,11 +29,8 @@ def load_raw() -> pd.DataFrame:
 
 def clean_target(df: pd.DataFrame) -> pd.DataFrame:
     """
-    DX is a mixed-type column — numeric codes plus the string 'pending'.
-    Coerce to numeric first (pending → NaN), then drop unknowns.
-
-    Coding: 0 = control, 1 = combined, 2 = inattentive, 3 = hyperactive/impulsive.
-    We binarise: 0 → 0, any ADHD subtype → 1.
+    DX contains numeric codes and the string 'pending'. Coerce to numeric
+    (pending -> NaN), drop unknowns, then binarise: 0=control, 1=any ADHD subtype.
     """
     df = df.copy()
     df[TARGET_COL] = pd.to_numeric(df[TARGET_COL], errors="coerce")
@@ -56,23 +51,15 @@ def clean_target(df: pd.DataFrame) -> pd.DataFrame:
 
 def clean_handedness(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Handedness in ADHD-200 is an Edinburgh Handedness Inventory (EHI) laterality
-    quotient — a float from -1.0 (strongly left) to +1.0 (strongly right).
-    Some sites used a different coding: 0=right, 1=left, 2=mixed, L=left.
-    -999 is a sentinel for missing.
+    Handedness is an EHI laterality quotient (-1 to +1), but some sites used
+    categorical codes (0=Right, 1=Left, 2=Mixed) or 'L'. -999 = missing.
 
-    Strategy:
-    - Map site-specific categorical codes to EHI-equivalent floats first.
-    - Coerce everything to float (-999 and unparseable → NaN).
-    - Bin into Left / Right / Mixed using standard EHI thresholds:
-        score < -0.4  → Left
-        score > +0.4  → Right
-        otherwise     → Mixed
+    Maps site-specific codes to EHI floats, then bins by standard thresholds:
+        score < -0.4 -> Left, score > +0.4 -> Right, else -> Mixed
     """
     df = df.copy()
     s = df["Handedness"].astype(str).str.strip()
 
-    # Dataset key: 0=Left, 1=Right, 2=Ambidextrous. and 'L' treated as Left.
     site_map = {"0": "-1.0", "1": "1.0", "2": "0.0", "3": "0.0", "L": "-1.0"}
     s = s.replace(site_map)
 
@@ -95,15 +82,11 @@ def clean_handedness(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean_numeric_features(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Inattentive and Hyper/Impulsive are stored as strings in some sites.
-    Coerce to float — any non-numeric value becomes NaN (handled by imputer
-    in the pipeline later).
-    """
+    """Coerce symptom score columns to float; -999 sentinel and non-numeric -> NaN."""
     df = df.copy()
     for col in ["Inattentive", "Hyper/Impulsive"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
-        df[col] = df[col].replace(-999, np.nan)  # sentinel → NaN
+        df[col] = df[col].replace(-999, np.nan)
     return df
 
 
@@ -121,10 +104,7 @@ def inspect_features(df: pd.DataFrame) -> None:
 
 
 def split_and_save(df: pd.DataFrame) -> None:
-    """
-    Single stratified split, locked.
-    60% train / 20% val / 20% test
-    """
+    """Stratified 60/20/20 split, locked at random_state=42."""
     PROCESSED.mkdir(parents=True, exist_ok=True)
 
     X = df.drop(columns=["target"])

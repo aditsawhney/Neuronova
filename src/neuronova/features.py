@@ -1,11 +1,9 @@
 """
-features.py — preprocessing pipeline definition
+features.py - preprocessing pipeline
 
-Defines the ColumnTransformer that handles imputation, encoding, and scaling
-for all features. This is imported by train.py and composed with each model
-into a full sklearn Pipeline — nothing here ever touches raw data directly.
+Defines the ColumnTransformer used by train.py. Never touches raw data directly.
 
-Feature inventory (post-audit):
+Features:
     Numeric  : Gender (0/1), Age, Inattentive, Hyper/Impulsive
     Categoric: Handedness (Left / Right / Mixed)
 """
@@ -23,16 +21,8 @@ def build_preprocessor() -> ColumnTransformer:
     """
     Returns an unfitted ColumnTransformer.
 
-    Numeric pipeline:
-        1. Median imputation — robust to the skew in behaviour scores,
-           and correct for the ~281 missing Inattentive/Hyper/Impulsive values.
-        2. Standard scaling — required for LR, LDA, SVM. Harmless for trees.
-
-    Categorical pipeline:
-        1. Most-frequent imputation — only 9 missing Handedness values.
-        2. One-hot encoding with drop='first' to avoid dummy variable trap.
-           Left/Mixed/Right → 2 binary columns.
-           handle_unknown='ignore' so unseen categories at inference don't crash.
+    Numeric: median imputation + standard scaling.
+    Categorical: most-frequent imputation + one-hot encoding (drop='first').
     """
     numeric_pipeline = Pipeline([
         ("imputer", SimpleImputer(strategy="median")),
@@ -41,26 +31,21 @@ def build_preprocessor() -> ColumnTransformer:
 
     categorical_pipeline = Pipeline([
         ("imputer", SimpleImputer(strategy="most_frequent")),
+        # drop='first' avoids dummy variable trap; handle_unknown='ignore' for inference safety
         ("encoder", OneHotEncoder(drop="first", handle_unknown="ignore", sparse_output=False)),
     ])
 
-    preprocessor = ColumnTransformer(
+    return ColumnTransformer(
         transformers=[
             ("num", numeric_pipeline, NUMERIC_FEATURES),
             ("cat", categorical_pipeline, CATEGORICAL_FEATURES),
         ],
-        remainder="drop",  # silently drops anything not listed — safety net
+        remainder="drop",
     )
-
-    return preprocessor
 
 
 def get_feature_names(preprocessor: ColumnTransformer) -> list[str]:
-    """
-    Returns human-readable feature names after transformation.
-    Useful for SHAP plots and the audit report.
-    Call this after the preprocessor has been fitted.
-    """
+    """Returns readable feature names after fitting. Useful for SHAP and audit plots."""
     num_names = NUMERIC_FEATURES
     cat_names = list(
         preprocessor.named_transformers_["cat"]
