@@ -53,12 +53,12 @@ class PredictRequest(BaseModel):
         Converts validated request fields into the format the model pipeline
         expects — matching the exact column names from training.
 
-        Gender encoding: Male → 0.0, Female → 1.0 (matches dataset coding).
+        Gender encoding: Male → 1.0, Female → 0.0 (matches dataset coding).
         Handedness stays as a string — the pipeline's OneHotEncoder handles it.
         Behaviour scores are mapped from raw 0–12 to T-score 9–90.
         """
         return {
-            "Gender": 0.0 if self.gender == "Male" else 1.0,
+            "Gender": 1.0 if self.gender == "Male" else 0.0,
             "Age": self.age,
             "Handedness": self.handedness,
             "Inattentive": _raw_to_tscore(self.inattentive),

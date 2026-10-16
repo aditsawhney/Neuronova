@@ -60,12 +60,12 @@ def evaluate_overall(model, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
 
 def audit_by_sex(model, X_test: pd.DataFrame, y_test: pd.Series) -> pd.DataFrame:
     """
-    Gender: 0.0=male, 1.0=female.
+    Gender: 0.0=female, 1.0=male.
     Key equity check - girls are chronically underdiagnosed, so we flag any
     F1 or AUC disparity between groups.
     """
     results = []
-    gender_map = {0.0: "Male", 1.0: "Female"}
+    gender_map = {0.0: "Female", 1.0: "Male"}
 
     for gender_val, label in gender_map.items():
         mask = X_test["Gender"] == gender_val

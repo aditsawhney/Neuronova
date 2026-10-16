@@ -1,4 +1,4 @@
-NeuroNova — Audit Report
+NeuroNova - Audit Report
 ==================================================
 
 Model: VotingEnsemble
@@ -9,15 +9,15 @@ Overall test metrics
   roc_auc: 0.9509
   avg_precision: 0.9442
 
-Fairness audit — by sex
+Fairness audit - by sex
 ------------------------------
  Group   N ADHD%     F1  ROC-AUC
-  Male  72 22.2% 0.8667   0.9163
-Female 118 48.3% 0.8850   0.9468
+Female  72 22.2% 0.8667   0.9163
+  Male 118 48.3% 0.8850   0.9468
 
-Fairness audit — by age band
+Fairness audit - by age band
 ------------------------------
 Age band  N ADHD%     F1  ROC-AUC
      <10 66 48.5% 0.9355   0.9844
-   10–13 75 36.0% 0.9091   0.9653
+   10-13 75 36.0% 0.9091   0.9653
      14+ 49 28.6% 0.6923   0.8878
